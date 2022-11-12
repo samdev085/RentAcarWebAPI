@@ -31,11 +31,11 @@ namespace Infra.Repository
                     await data.Client.AddAsync(
                           new Client
                           {
-                              Name = name,
+                              UserName = name,
                               Email = email,
                               Address = address,
-                              Password = password,
-                              Phone = phone,
+                              PasswordHash = password,
+                              PhoneNumber = phone,
                               Type = UserType.CommonUser
                           });
 
@@ -59,7 +59,7 @@ namespace Infra.Repository
                 {
                     return await data.Client.
                            Where(x => x.Email.Equals(email) &&
-                           x.Password.Equals(password))
+                           x.PasswordHash.Equals(password))
                            .AsNoTracking()
                            .AnyAsync();
                 }

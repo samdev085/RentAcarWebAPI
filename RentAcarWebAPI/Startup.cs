@@ -40,8 +40,8 @@ namespace RentAcarWebAPI
         {
 
             services.AddCors();
-            //services.AddDbContext<Context>(options =>
-            //options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+            services.AddDbContext<Context>(options =>
+            options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
             services.AddDefaultIdentity<Client>(options => options.SignIn.RequireConfirmedAccount = false)
                 .AddEntityFrameworkStores<Context>();
