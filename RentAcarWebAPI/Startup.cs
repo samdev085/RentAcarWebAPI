@@ -1,12 +1,24 @@
+using Application.Application;
+using Application.Interfaces;
+using Domain.Interfaces;
+using Domain.Interfaces.Generic;
+using Entities.Entities;
+using Infra.Configuration;
+using Infra.Repository;
+using Infra.Repository.Generic;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using RentAcarWebAPI.Token;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,6 +39,55 @@ namespace RentAcarWebAPI
         public void ConfigureServices(IServiceCollection services)
         {
 
+            services.AddCors();
+            //services.AddDbContext<Context>(options =>
+            //options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+
+            services.AddDefaultIdentity<Client>(options => options.SignIn.RequireConfirmedAccount = false)
+                .AddEntityFrameworkStores<Context>();
+
+            // INTERFACE AND REPOSITORY
+            services.AddSingleton(typeof(IGeneric<>), typeof(RepositoryGeneric<>));
+            services.AddSingleton<IClient, RepositoryClient>();
+            //services.AddSingleton<IUser, RepositoryUser>();
+
+            // DOMAIN SERVICE
+            //services.AddSingleton<IServiceNews, NewsService>();
+
+            // INTERFACE APPLICATION
+            services.AddSingleton<IApplicationClient, ApplicationClient>();
+            //services.AddSingleton<IApplicationUser, Application.Applications.ApplicationUser>();
+
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+       .AddJwtBearer(option =>
+       {
+           option.TokenValidationParameters = new TokenValidationParameters
+           {
+               ValidateIssuer = false,
+               ValidateAudience = false,
+               ValidateLifetime = true,
+               ValidateIssuerSigningKey = true,
+
+               ValidIssuer = "Test.Securiry.Bearer",
+               ValidAudience = "Test.Securiry.Bearer",
+               IssuerSigningKey = JwtSecurityKey.Create("Secret_Key-12345678")
+           };
+
+           option.Events = new JwtBearerEvents
+           {
+               OnAuthenticationFailed = context =>
+               {
+                   Console.WriteLine("OnAuthenticationFailed: " + context.Exception.Message);
+                   return Task.CompletedTask;
+               },
+               OnTokenValidated = context =>
+               {
+                   Console.WriteLine("OnTokenValidated: " + context.SecurityToken);
+                   return Task.CompletedTask;
+               }
+           };
+       });
+
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
@@ -37,6 +98,14 @@ namespace RentAcarWebAPI
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            #region Novo
+            var urlClient3 = "http://localhost:4200";
+            app.UseCors(x => x
+               .AllowAnyOrigin()
+               .AllowAnyMethod()
+               .AllowAnyHeader().WithOrigins(urlClient3));
+            #endregion
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -48,6 +117,7 @@ namespace RentAcarWebAPI
 
             app.UseRouting();
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>

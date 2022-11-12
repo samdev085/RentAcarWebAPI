@@ -8,7 +8,7 @@ namespace Application.Interfaces
 {
     public interface IApplicationClient
     {
-        Task<bool> AddUser(string email, string password);
+        Task<bool> AddUser(string name, string email, string address, string password, string phone);
         Task<bool> CheckUser(string email, string password);
         Task<string> ReturnIdUser(string email);
     }

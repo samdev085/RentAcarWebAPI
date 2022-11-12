@@ -36,7 +36,7 @@ namespace Infra.Configuration
 
         public string GetStringConnection()
         {
-            string strcon = "Data Source=SAMUELPC;Initial Catalog=DDDProjectdb;Integrated Security=SSPI;Persist Security Info=False;";
+            string strcon = "Data Source=SAMUELPC;Initial Catalog=RentACardb;Integrated Security=SSPI;Persist Security Info=False;";
             return strcon;
         }
     }
