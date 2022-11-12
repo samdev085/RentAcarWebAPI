@@ -32,6 +32,23 @@ namespace RentAcarWebAPI.Controllers
             _signInManager = signInManager;
         }
 
+        [AllowAnonymous]
+        [Produces("application/json")]
+        [HttpPost("/api/AddUser")]
+        public async Task<IActionResult> AddUser([FromBody] Register reg)
+        {
+            if (string.IsNullOrWhiteSpace(reg.email) || string.IsNullOrWhiteSpace(reg.password))
+                return Ok("Falta alguns dados");
+
+            var result = await
+                _IApplicationClient.AddUser(reg.userName, reg.email, reg.phoneNumber, reg.address, reg.password);
+
+            if (result)
+                return Ok("Usuário Adicionado com Sucesso");
+            else
+                return Ok("Erro ao adicionar usuário");
+        }
+
 
         [AllowAnonymous]
         [Produces("application/json")]
@@ -75,10 +92,8 @@ namespace RentAcarWebAPI.Controllers
 
             var user = new Client
             {
-                //UserName = login.email,
+                UserName = login.email,
                 Email = login.email,
-                //Phone = login.phone,
-                //Age = login.age,
                 Type = UserType.CommonUser
             };
             var result = await _userManager.CreateAsync(user, login.password);

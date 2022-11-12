@@ -8,7 +8,7 @@ namespace Domain.Interfaces
 {
     public interface IClient
     {
-        Task<bool> AddUser(string name, string email, string address, string password, string phone);
+        Task<bool> AddUser(string name, string email, string phone, string address, string password);
         Task<bool> CheckUser(string email, string password);
         Task<string> ReturnIdUser(string email);
     }

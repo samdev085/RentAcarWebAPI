@@ -22,7 +22,7 @@ namespace Infra.Repository
             _optionsbuilder = new DbContextOptions<Context>();
         }
 
-        public async Task<bool> AddUser(string name, string email, string address, string password, string phone)
+        public async Task<bool> AddUser(string name, string email, string phone, string address, string password)
         {
             try
             {
