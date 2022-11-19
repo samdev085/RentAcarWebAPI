@@ -49,14 +49,14 @@ namespace RentAcarWebAPI
             // INTERFACE AND REPOSITORY
             services.AddSingleton(typeof(IGeneric<>), typeof(RepositoryGeneric<>));
             services.AddSingleton<IClient, RepositoryClient>();
-            //services.AddSingleton<IUser, RepositoryUser>();
+            services.AddSingleton<IVehicle, RepositoryVehicle>();
 
             // DOMAIN SERVICE
             //services.AddSingleton<IServiceNews, NewsService>();
 
             // INTERFACE APPLICATION
             services.AddSingleton<IApplicationClient, ApplicationClient>();
-            //services.AddSingleton<IApplicationUser, Application.Applications.ApplicationUser>();
+            services.AddSingleton<IApplicationVehicle, ApplicationVehicle>();
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
        .AddJwtBearer(option =>

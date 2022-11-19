@@ -32,7 +32,7 @@ namespace Infra.Configuration
         protected override void OnModelCreating(ModelBuilder builder)
         {
             builder.Entity<Client>().ToTable("AspNetUsers").HasKey(t => t.Id);
-            builder.Entity<Vehicle>().ToTable("Vehicles").HasKey(t => t.Id);
+            
 
 
             base.OnModelCreating(builder);

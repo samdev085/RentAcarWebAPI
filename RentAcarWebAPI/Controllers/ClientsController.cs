@@ -120,7 +120,7 @@ namespace RentAcarWebAPI.Controllers
 
         }
 
-        [Authorize]
+        [AllowAnonymous]
         [Produces("application/json")]
         [HttpPost("/api/DeleteUser")]
         public async Task<IActionResult> DeleteUser(string id)
@@ -129,13 +129,12 @@ namespace RentAcarWebAPI.Controllers
             if (string.IsNullOrWhiteSpace(id))
                 return Ok("User data is invalid.");
 
-            var user = await _IApplicationClient.ReturnIdUser(id);
-            if (user == null)
-                return Ok("User not found.");
+            var user = await _IApplicationClient.DeleteUser(id);
+            if (user == true)
+                return Ok("User successfully deleted.");
 
             else
-                await _IApplicationClient.DeleteUser(user);
-                return Ok("User successfully deleted.");
+                return Ok("Error to delete user.");
 
         }
     }

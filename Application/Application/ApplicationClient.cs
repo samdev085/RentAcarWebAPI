@@ -16,7 +16,6 @@ namespace Application.Application
         IClient _IClient;
         
 
-
         public ApplicationClient(IClient IClient)
         {
             _IClient = IClient;
@@ -33,9 +32,9 @@ namespace Application.Application
             return await _IClient.CheckUser(email, password);
         }
 
-        public async Task<string> ReturnIdUser(string email)
+        public async Task<string> ReturnIdUser(string id)
         {
-            return await _IClient.ReturnIdUser(email);
+            return await _IClient.ReturnIdUser(id);
         }
 
         public async Task<bool> DeleteUser(string id)

@@ -76,7 +76,7 @@ namespace Infra.Repository
             {
                 using (var data = new Context(_optionsbuilder))
                 {
-                    var user = data.Client.Where(x => x.Id.Equals(id));
+                    var user = data.Client.Where(x => x.Id == id);
                     if(user != null)
                     data.Remove(user);
                     await data.SaveChangesAsync();
@@ -90,18 +90,18 @@ namespace Infra.Repository
             return true;
         }
 
-        public async Task<string> ReturnIdUser(string email)
+        public async Task<string> ReturnIdUser(string id)
         {
             try
             {
                 using (var data = new Context(_optionsbuilder))
                 {
                     var client = await data.Client.
-                           Where(x => x.Email.Equals(email))
+                           Where(x => x.Id == id)
                            .AsNoTracking()
                            .FirstOrDefaultAsync();
 
-                    return client.Email;
+                    return client.Id;
                 }
             }
             catch (Exception)
