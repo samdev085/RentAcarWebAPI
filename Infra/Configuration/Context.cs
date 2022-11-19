@@ -1,4 +1,5 @@
 ﻿using Entities.Entities;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -8,14 +9,15 @@ using System.Threading.Tasks;
 
 namespace Infra.Configuration
 {
-    public class Context : DbContext
+    public class Context : IdentityDbContext<Client>
     {
         public Context(DbContextOptions<Context> options) : base(options)
         {
         }
 
         public DbSet<Client> Client { get; set; }
-        //public DbSet<ApplicationUser> ApplicationUser { get; set; }
+        public DbSet<Vehicle> Vehicle { get; set; }
+        public DbSet<Contract> Contract { get; set; }
 
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -29,7 +31,9 @@ namespace Infra.Configuration
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
-            //builder.Entity<ApplicationUser>().ToTable("AspNetUsers").HasKey(t => t.Id);
+            builder.Entity<Client>().ToTable("AspNetUsers").HasKey(t => t.Id);
+            builder.Entity<Vehicle>().ToTable("Vehicles").HasKey(t => t.Id);
+
 
             base.OnModelCreating(builder);
         }

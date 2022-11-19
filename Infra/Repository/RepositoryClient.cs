@@ -33,9 +33,9 @@ namespace Infra.Repository
                           {
                               UserName = name,
                               Email = email,
+                              PhoneNumber = phone,
                               Address = address,
                               PasswordHash = password,
-                              PhoneNumber = phone,
                               Type = UserType.CommonUser
                           });
 
@@ -68,6 +68,26 @@ namespace Infra.Repository
             {
                 return false;
             }
+        }
+
+        public async Task<bool> DeleteUser(string id)
+        {
+            try
+            {
+                using (var data = new Context(_optionsbuilder))
+                {
+                    var user = data.Client.Where(x => x.Id.Equals(id));
+                    if(user != null)
+                    data.Remove(user);
+                    await data.SaveChangesAsync();
+                }
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+
+            return true;
         }
 
         public async Task<string> ReturnIdUser(string email)

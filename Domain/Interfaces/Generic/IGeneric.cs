@@ -10,7 +10,7 @@ namespace Domain.Interfaces.Generic
     {
         Task Add(T Object);
         Task Update(T Object);
-        Task Delete(T Object);
+        Task<bool> Delete(T Object);
         Task<T> GetById(int Id);
         Task<List<T>> GetAll();
     }

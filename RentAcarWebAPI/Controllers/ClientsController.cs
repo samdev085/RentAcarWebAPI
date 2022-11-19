@@ -1,4 +1,5 @@
 ﻿using Application.Interfaces;
+using Application.Interfaces.Generic;
 using Entities.Entities;
 using Entities.Enums;
 using Microsoft.AspNetCore.Authorization;
@@ -21,13 +22,14 @@ namespace RentAcarWebAPI.Controllers
     public class ClientsController : ControllerBase
     {
         private readonly IApplicationClient _IApplicationClient;
+        //private readonly IApplicationGeneric<Client> _IApplicationGeneric;
         private readonly UserManager<Client> _userManager;
         private readonly SignInManager<Client> _signInManager;
 
-        public ClientsController(IApplicationClient IApplicationClient, SignInManager<Client> signInManager,
-            UserManager<Client> userManager)
+        public ClientsController(IApplicationClient IApplicationClient, SignInManager<Client> signInManager, UserManager<Client> userManager)
         {
             _IApplicationClient = IApplicationClient;
+            //_IApplicationGeneric = IApplicationGeneric;
             _userManager = userManager;
             _signInManager = signInManager;
         }
@@ -48,7 +50,6 @@ namespace RentAcarWebAPI.Controllers
             else
                 return Ok("Erro ao adicionar usuário");
         }
-
 
         [AllowAnonymous]
         [Produces("application/json")]
@@ -116,6 +117,25 @@ namespace RentAcarWebAPI.Controllers
                 return Ok("Usuário Adicionado com Sucesso");
             else
                 return Ok("Erro ao confirmar usuários");
+
+        }
+
+        [Authorize]
+        [Produces("application/json")]
+        [HttpPost("/api/DeleteUser")]
+        public async Task<IActionResult> DeleteUser(string id)
+        {
+
+            if (string.IsNullOrWhiteSpace(id))
+                return Ok("User data is invalid.");
+
+            var user = await _IApplicationClient.ReturnIdUser(id);
+            if (user == null)
+                return Ok("User not found.");
+
+            else
+                await _IApplicationClient.DeleteUser(user);
+                return Ok("User successfully deleted.");
 
         }
     }

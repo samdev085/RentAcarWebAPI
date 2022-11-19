@@ -4,14 +4,16 @@ using Infra.Configuration;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Infra.Migrations
 {
     [DbContext(typeof(Context))]
-    partial class ContextModelSnapshot : ModelSnapshot
+    [Migration("20221112044127_Changes")]
+    partial class Changes
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -68,10 +70,6 @@ namespace Infra.Migrations
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("Status")
-                        .HasColumnType("int")
-                        .HasColumnName("CLNT_STATUS");
-
                     b.Property<bool>("TwoFactorEnabled")
                         .HasColumnType("bit");
 
@@ -94,72 +92,6 @@ namespace Infra.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("AspNetUsers");
-                });
-
-            modelBuilder.Entity("Entities.Entities.Contract", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasColumnName("CTRC_ID")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("CLNT")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<DateTime>("Finish")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("CTRC_FINISH");
-
-                    b.Property<decimal>("Price")
-                        .HasColumnType("decimal(18,2)")
-                        .HasColumnName("CTRC_PRICE");
-
-                    b.Property<DateTime>("Start")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("CTRC_START");
-
-                    b.Property<int?>("VHCL")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CLNT");
-
-                    b.HasIndex("VHCL");
-
-                    b.ToTable("TB_CONTRACTS");
-                });
-
-            modelBuilder.Entity("Entities.Entities.Vehicle", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasColumnName("VHCL_ID")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<int?>("Category")
-                        .HasColumnType("int")
-                        .HasColumnName("VHCL_CATEGORY");
-
-                    b.Property<string>("Manufacturer")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)")
-                        .HasColumnName("VHCL_MANUFACTURER");
-
-                    b.Property<string>("Model")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)")
-                        .HasColumnName("VHCL_MODEL");
-
-                    b.Property<int>("Year")
-                        .HasColumnType("int")
-                        .HasColumnName("VHCL_YEAR");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Vehicles");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -295,21 +227,6 @@ namespace Infra.Migrations
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens");
-                });
-
-            modelBuilder.Entity("Entities.Entities.Contract", b =>
-                {
-                    b.HasOne("Entities.Entities.Client", "Client")
-                        .WithMany()
-                        .HasForeignKey("CLNT");
-
-                    b.HasOne("Entities.Entities.Vehicle", "Vehicle")
-                        .WithMany()
-                        .HasForeignKey("VHCL");
-
-                    b.Navigation("Client");
-
-                    b.Navigation("Vehicle");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

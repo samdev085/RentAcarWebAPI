@@ -29,12 +29,13 @@ namespace Infra.Repository.Generic
             }
         }
 
-        public async Task Delete(T Object)
+        public async Task<bool> Delete(T Object)
         {
             using (var data = new Context(_OptionsBuilder))
             {
                 data.Set<T>().Remove(Object);
                 await data.SaveChangesAsync();
+                return true;
             }
         }
 

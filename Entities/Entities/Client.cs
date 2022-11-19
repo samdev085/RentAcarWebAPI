@@ -14,6 +14,9 @@ namespace Entities.Entities
         [Column("CLNT_ADDRESS")]
         public string Address { get; set; }
 
+        [Column("CLNT_STATUS")]
+        public int Status { get; set; }
+
         [Column("CLNT_TYPE")]
         public UserType? Type { get; set; }
     }
