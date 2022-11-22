@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Infra.Repository
 {
-    class RepositoryContract
+    public class RepositoryContract
     {
     }
 }

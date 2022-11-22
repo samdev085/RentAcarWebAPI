@@ -33,8 +33,6 @@ namespace Infra.Configuration
         {
             builder.Entity<Client>().ToTable("AspNetUsers").HasKey(t => t.Id);
             
-
-
             base.OnModelCreating(builder);
         }
 

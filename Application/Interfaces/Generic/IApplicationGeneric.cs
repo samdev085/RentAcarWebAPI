@@ -10,8 +10,8 @@ namespace Application.Interfaces.Generic
     {
         Task Add(T Object);
         Task Update(T Object);
-        Task<bool> Delete(T Object);
-        Task<T> GetById(int Id);
+        Task Delete(T Object);
+        Task<T> GetById(string Id);
         Task<List<T>> GetAll();
     }
 }

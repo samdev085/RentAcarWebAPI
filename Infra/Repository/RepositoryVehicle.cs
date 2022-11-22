@@ -48,5 +48,26 @@ namespace Infra.Repository
 
             return true;
         }
+        public async Task<bool> DeleteVehicle(int id)
+        {
+            try
+            {
+                using (var data = new Context(_optionsbuilder))
+                {
+                    var vehicleCheck = await data.Vehicle.FindAsync(id);
+                    if (vehicleCheck != null || vehicleCheck.Id == id)
+                    {
+                        data.Vehicle.Remove(vehicleCheck);
+                        await data.SaveChangesAsync();
+                    }
+                }
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+
+            return true;
+        }
     }
 }

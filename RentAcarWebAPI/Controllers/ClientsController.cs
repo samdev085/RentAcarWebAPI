@@ -22,14 +22,12 @@ namespace RentAcarWebAPI.Controllers
     public class ClientsController : ControllerBase
     {
         private readonly IApplicationClient _IApplicationClient;
-        //private readonly IApplicationGeneric<Client> _IApplicationGeneric;
         private readonly UserManager<Client> _userManager;
         private readonly SignInManager<Client> _signInManager;
 
         public ClientsController(IApplicationClient IApplicationClient, SignInManager<Client> signInManager, UserManager<Client> userManager)
         {
             _IApplicationClient = IApplicationClient;
-            //_IApplicationGeneric = IApplicationGeneric;
             _userManager = userManager;
             _signInManager = signInManager;
         }
@@ -122,20 +120,17 @@ namespace RentAcarWebAPI.Controllers
 
         [AllowAnonymous]
         [Produces("application/json")]
-        [HttpPost("/api/DeleteUser")]
+        [HttpDelete("/api/DeleteUser")]
         public async Task<IActionResult> DeleteUser(string id)
         {
 
-            if (string.IsNullOrWhiteSpace(id))
-                return Ok("User data is invalid.");
+            var userCheck = await _IApplicationClient.DeleteUser(id);
+            if (userCheck == true)
+            {
+                return Ok("Successfully deleted user.");
+            }
 
-            var user = await _IApplicationClient.DeleteUser(id);
-            if (user == true)
-                return Ok("User successfully deleted.");
-
-            else
-                return Ok("Error to delete user.");
-
+            return Ok("Error to delete a user.");
         }
     }
 }

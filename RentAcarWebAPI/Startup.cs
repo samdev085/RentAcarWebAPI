@@ -50,6 +50,7 @@ namespace RentAcarWebAPI
             services.AddSingleton(typeof(IGeneric<>), typeof(RepositoryGeneric<>));
             services.AddSingleton<IClient, RepositoryClient>();
             services.AddSingleton<IVehicle, RepositoryVehicle>();
+         
 
             // DOMAIN SERVICE
             //services.AddSingleton<IServiceNews, NewsService>();
@@ -98,13 +99,13 @@ namespace RentAcarWebAPI
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            #region Novo
+            
             var urlClient3 = "http://localhost:4200";
             app.UseCors(x => x
                .AllowAnyOrigin()
                .AllowAnyMethod()
                .AllowAnyHeader().WithOrigins(urlClient3));
-            #endregion
+            
 
             if (env.IsDevelopment())
             {

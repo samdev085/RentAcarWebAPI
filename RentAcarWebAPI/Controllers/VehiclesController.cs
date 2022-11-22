@@ -38,5 +38,18 @@ namespace RentAcarWebAPI.Controllers
                 return Ok("Error when add new vehicle.");
         }
 
+        [AllowAnonymous]
+        [Produces("application/json")]
+        [HttpDelete("/api/DeleteVehicle")]
+        public async Task<IActionResult> DeleteVehicle([FromBody] VehicleModel vehicle)
+        {
+
+            var response = await _IApplicationVehicle.DeleteVehicle(vehicle.id);
+            if (response)
+                return Ok("New vehicle add successfully.");
+            else
+                return Ok("Error when add new vehicle.");
+        }
+
     }    
 }

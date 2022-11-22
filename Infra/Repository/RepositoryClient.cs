@@ -3,7 +3,9 @@ using Entities.Entities;
 using Entities.Enums;
 using Infra.Configuration;
 using Infra.Repository.Generic;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,13 +16,16 @@ namespace Infra.Repository
 {
     public class RepositoryClient : RepositoryGeneric<Client>, IClient
     {
-
+        
         private readonly DbContextOptions<Context> _optionsbuilder;
+        
+
 
         public RepositoryClient()
         {
             _optionsbuilder = new DbContextOptions<Context>();
         }
+        
 
         public async Task<bool> AddUser(string name, string email, string phone, string address, string password)
         {
@@ -28,7 +33,10 @@ namespace Infra.Repository
             {
                 using (var data = new Context(_optionsbuilder))
                 {
-                    await data.Client.AddAsync(
+                    var check = await data.Client.FindAsync(email);
+                    if (check==null)
+                    {
+                        await data.Client.AddAsync(
                           new Client
                           {
                               UserName = name,
@@ -36,11 +44,11 @@ namespace Infra.Repository
                               PhoneNumber = phone,
                               Address = address,
                               PasswordHash = password,
-                              Type = UserType.CommonUser
+                              Type = UserType.CommonUser,
+                              Status = 1
                           });
-
-                    await data.SaveChangesAsync();
-
+                        await data.SaveChangesAsync();
+                    }
                 }
             }
             catch (Exception)
@@ -50,7 +58,6 @@ namespace Infra.Repository
 
             return true;
         }
-
         public async Task<bool> CheckUser(string email, string password)
         {
             try
@@ -69,17 +76,18 @@ namespace Infra.Repository
                 return false;
             }
         }
-
         public async Task<bool> DeleteUser(string id)
         {
             try
             {
                 using (var data = new Context(_optionsbuilder))
                 {
-                    var user = data.Client.Where(x => x.Id == id);
-                    if(user != null)
-                    data.Remove(user);
-                    await data.SaveChangesAsync();
+                    var user = await data.Client.FindAsync(id);
+                    if (user!=null || user.Id==id)
+                    {
+                        data.Client.Remove(user);
+                        await data.SaveChangesAsync();
+                    }                    
                 }
             }
             catch (Exception)
@@ -89,7 +97,6 @@ namespace Infra.Repository
 
             return true;
         }
-
         public async Task<string> ReturnIdUser(string id)
         {
             try
@@ -109,5 +116,6 @@ namespace Infra.Repository
                 return string.Empty;
             }
         }
+
     }
 }

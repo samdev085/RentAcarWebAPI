@@ -41,6 +41,5 @@ namespace Application.Application
         {
             return await _IClient.DeleteUser(id);
         }
-        
     }
 }

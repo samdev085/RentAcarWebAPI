@@ -1,5 +1,8 @@
 ﻿using Application.Interfaces;
+using Application.Interfaces.Generic;
 using Domain.Interfaces;
+using Domain.Interfaces.Generic;
+using Entities.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,9 +21,15 @@ namespace Application.Application
             _IVehicle = IVehicle;
         }
 
+
         public async Task<bool> AddVehicle(string manufacturer, string model, int year)
         {
             return await _IVehicle.AddVehicle(manufacturer, model, year);
+        }
+
+        public async Task<bool> DeleteVehicle(int id)
+        {
+            return await _IVehicle.DeleteVehicle(id);
         }
     }
 }

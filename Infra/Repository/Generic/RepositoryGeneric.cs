@@ -29,13 +29,12 @@ namespace Infra.Repository.Generic
             }
         }
 
-        public async Task<bool> Delete(T Object)
+        public async Task Delete(T Object)
         {
             using (var data = new Context(_OptionsBuilder))
             {
                 data.Set<T>().Remove(Object);
                 await data.SaveChangesAsync();
-                return true;
             }
         }
 
@@ -47,7 +46,7 @@ namespace Infra.Repository.Generic
             }
         }
 
-        public async Task<T> GetById(int Id)
+        public async Task<T> GetById(string Id)
         {
             using (var data = new Context(_OptionsBuilder))
             {
