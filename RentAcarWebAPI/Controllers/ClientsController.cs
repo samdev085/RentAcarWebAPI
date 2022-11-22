@@ -1,5 +1,4 @@
 ﻿using Application.Interfaces;
-using Application.Interfaces.Generic;
 using Entities.Entities;
 using Entities.Enums;
 using Microsoft.AspNetCore.Authorization;

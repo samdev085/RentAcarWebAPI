@@ -2,17 +2,13 @@
 using Entities.Entities;
 using Entities.Enums;
 using Infra.Configuration;
-using Infra.Repository.Generic;
 using Microsoft.EntityFrameworkCore;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Infra.Repository
 {
-    public class RepositoryVehicle : RepositoryGeneric<Vehicle>, IVehicle
+    public class RepositoryVehicle :  IVehicle
     {
 
         private readonly DbContextOptions<Context> _optionsbuilder;

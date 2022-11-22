@@ -2,19 +2,14 @@
 using Entities.Entities;
 using Entities.Enums;
 using Infra.Configuration;
-using Infra.Repository.Generic;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Infra.Repository
 {
-    public class RepositoryClient : RepositoryGeneric<Client>, IClient
+    public class RepositoryClient :  IClient
     {
         
         private readonly DbContextOptions<Context> _optionsbuilder;

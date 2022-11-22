@@ -1,11 +1,10 @@
 using Application.Application;
 using Application.Interfaces;
 using Domain.Interfaces;
-using Domain.Interfaces.Generic;
+
 using Entities.Entities;
 using Infra.Configuration;
 using Infra.Repository;
-using Infra.Repository.Generic;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -47,7 +46,7 @@ namespace RentAcarWebAPI
                 .AddEntityFrameworkStores<Context>();
 
             // INTERFACE AND REPOSITORY
-            services.AddSingleton(typeof(IGeneric<>), typeof(RepositoryGeneric<>));
+            //services.AddSingleton(typeof(IGeneric<>), typeof(RepositoryGeneric<>));
             services.AddSingleton<IClient, RepositoryClient>();
             services.AddSingleton<IVehicle, RepositoryVehicle>();
          
