@@ -9,12 +9,10 @@ using System.Threading.Tasks;
 
 namespace Infra.Repository
 {
-    public class RepositoryClient :  IClient
+    public class RepositoryClient : IClient
     {
         
         private readonly DbContextOptions<Context> _optionsbuilder;
-        
-
 
         public RepositoryClient()
         {
@@ -52,7 +50,7 @@ namespace Infra.Repository
             }
 
             return true;
-        }
+        }       
         public async Task<bool> CheckUser(string email, string password)
         {
             try

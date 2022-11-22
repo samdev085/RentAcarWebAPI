@@ -2,14 +2,11 @@
 using Entities.Entities;
 using Entities.Enums;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
 using RentAcarWebAPI.Models;
 using RentAcarWebAPI.Token;
-using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -24,7 +21,8 @@ namespace RentAcarWebAPI.Controllers
         private readonly UserManager<Client> _userManager;
         private readonly SignInManager<Client> _signInManager;
 
-        public ClientsController(IApplicationClient IApplicationClient, SignInManager<Client> signInManager, UserManager<Client> userManager)
+
+        public ClientsController(IApplicationClient IApplicationClient, UserManager<Client> userManager, SignInManager<Client> signInManager)
         {
             _IApplicationClient = IApplicationClient;
             _userManager = userManager;
@@ -83,19 +81,22 @@ namespace RentAcarWebAPI.Controllers
         [AllowAnonymous]
         [Produces("application/json")]
         [HttpPost("/api/AddUserIdentity")]
-        public async Task<IActionResult> AddUserIdentity([FromBody] Login login)
+        public async Task<IActionResult> AddUserIdentity([FromBody] Register reg)
         {
-            if (string.IsNullOrWhiteSpace(login.email) || string.IsNullOrWhiteSpace(login.password))
+            if (string.IsNullOrWhiteSpace(reg.email) || string.IsNullOrWhiteSpace(reg.password))
                 return Ok("Falta alguns dados");
 
             var user = new Client
             {
-                UserName = login.email,
-                Email = login.email,
-                Type = UserType.CommonUser
+                UserName = reg.userName,
+                Email = reg.email,
+                PhoneNumber = reg.phoneNumber,
+                Address = reg.address,
+                PasswordHash = reg.password,
+                Type = UserType.CommonUser,
+                Status = 1
             };
-            var result = await _userManager.CreateAsync(user, login.password);
-
+            var result = await _userManager.CreateAsync(user, reg.password);
             if (result.Errors.Any())
             {
                 return Ok(result.Errors);
@@ -109,28 +110,30 @@ namespace RentAcarWebAPI.Controllers
             // retorno email 
             code = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(code));
             var result2 = await _userManager.ConfirmEmailAsync(user, code);
-
             if (result2.Succeeded)
                 return Ok("Usuário Adicionado com Sucesso");
             else
                 return Ok("Erro ao confirmar usuários");
 
+
         }
 
         [AllowAnonymous]
         [Produces("application/json")]
-        [HttpDelete("/api/DeleteUser")]
-        public async Task<IActionResult> DeleteUser(string id)
+        [HttpDelete("/api/DeleteUserIdentity")]
+        public async Task<IActionResult> DeleteUserIdentity(string id)
         {
-
-            var userCheck = await _IApplicationClient.DeleteUser(id);
-            if (userCheck == true)
+            var userCheck = await _userManager.FindByIdAsync(id);
+            if (userCheck != null || userCheck.Id == id)
             {
-                return Ok("Successfully deleted user.");
+                var result = await _userManager.DeleteAsync(userCheck);
+                if (result.Succeeded)
+                    return Ok("Successfully deleted user.");
             }
 
             return Ok("Error to delete a user.");
         }
     }
 }
+
 

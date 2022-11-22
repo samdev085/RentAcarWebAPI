@@ -1,26 +1,21 @@
 using Application.Application;
 using Application.Interfaces;
 using Domain.Interfaces;
-
 using Entities.Entities;
 using Infra.Configuration;
 using Infra.Repository;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using RentAcarWebAPI.Token;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace RentAcarWebAPI
@@ -42,14 +37,14 @@ namespace RentAcarWebAPI
             services.AddDbContext<Context>(options =>
             options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
+
             services.AddDefaultIdentity<Client>(options => options.SignIn.RequireConfirmedAccount = false)
                 .AddEntityFrameworkStores<Context>();
 
             // INTERFACE AND REPOSITORY
             //services.AddSingleton(typeof(IGeneric<>), typeof(RepositoryGeneric<>));
             services.AddSingleton<IClient, RepositoryClient>();
-            services.AddSingleton<IVehicle, RepositoryVehicle>();
-         
+            services.AddSingleton<IVehicle, RepositoryVehicle>();        
 
             // DOMAIN SERVICE
             //services.AddSingleton<IServiceNews, NewsService>();

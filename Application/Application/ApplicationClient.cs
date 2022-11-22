@@ -12,7 +12,6 @@ namespace Application.Application
         public ApplicationClient(IClient IClient)
         {
             _IClient = IClient;
-            
         }
 
         public async Task<bool> AddUser(string name, string email, string phone, string address, string password)
@@ -34,5 +33,7 @@ namespace Application.Application
         {
             return await _IClient.DeleteUser(id);
         }
+
+        
     }
 }
