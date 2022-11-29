@@ -5,8 +5,11 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.EntityFrameworkCore;
 using RentAcarWebAPI.Models;
 using RentAcarWebAPI.Token;
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -18,15 +21,35 @@ namespace RentAcarWebAPI.Controllers
     public class ClientsController : ControllerBase
     {
         private readonly IApplicationClient _IApplicationClient;
-        private readonly UserManager<Client> _userManager;
-        private readonly SignInManager<Client> _signInManager;
 
-
-        public ClientsController(IApplicationClient IApplicationClient, UserManager<Client> userManager, SignInManager<Client> signInManager)
+        public ClientsController(IApplicationClient IApplicationClient)
         {
             _IApplicationClient = IApplicationClient;
-            _userManager = userManager;
-            _signInManager = signInManager;
+        }
+
+        //[Authorize]
+        [AllowAnonymous]
+        [Produces("application/json")]
+        [HttpGet("/api/ListClients")]
+        public async Task<List<Client>> ListClients()
+        {
+            return await _IApplicationClient.ListClients();
+        }
+
+        [AllowAnonymous]
+        [Produces("application/json")]
+        [HttpGet("/api/GetUser")]
+        public async Task<ActionResult<Client>> GetUser(string id)
+        {
+            if (string.IsNullOrWhiteSpace(id))
+                return Ok("Field is empty.");
+
+            var user = await _IApplicationClient.GetUser(id);
+            if (user != null)
+            {
+                return user;
+            }
+            return Ok("User not found.");
         }
 
         [AllowAnonymous]
@@ -48,16 +71,14 @@ namespace RentAcarWebAPI.Controllers
 
         [AllowAnonymous]
         [Produces("application/json")]
-        [HttpPost("/api/CreateTokenIdentity")]
-        public async Task<IActionResult> CreateTokenIdentity([FromBody] Login login)
+        [HttpPost("/api/CreateToken")]
+        public async Task<IActionResult> CreateToken([FromBody] Login login)
         {
             if (string.IsNullOrWhiteSpace(login.email) || string.IsNullOrWhiteSpace(login.password))
                 return Unauthorized();
 
-            var result = await
-                _signInManager.PasswordSignInAsync(login.email, login.password, false, lockoutOnFailure: false);
-
-            if (result.Succeeded)
+            var result = await _IApplicationClient.CheckUser(login.email, login.password);
+            if (result)
             {
                 var userId = await _IApplicationClient.ReturnIdUser(login.email);
                 var token = new TokenJWTBuilder()
@@ -66,7 +87,7 @@ namespace RentAcarWebAPI.Controllers
                  .AddIssuer("Test.Securiry.Bearer")
                  .AddAudience("Test.Securiry.Bearer")
                  .AddClaim("userId", userId)
-                 .AddExpiry(30) // minutes for a token expiration
+                 .AddExpiry(60) // minutes for a token expiration
                  .Builder();
 
                 return Ok(token.value);
@@ -80,59 +101,18 @@ namespace RentAcarWebAPI.Controllers
 
         [AllowAnonymous]
         [Produces("application/json")]
-        [HttpPost("/api/AddUserIdentity")]
-        public async Task<IActionResult> AddUserIdentity([FromBody] Register reg)
+        [HttpDelete("/api/DeleteUser")]
+        public async Task<IActionResult> DeleteUser(string id)
         {
-            if (string.IsNullOrWhiteSpace(reg.email) || string.IsNullOrWhiteSpace(reg.password))
-                return Ok("Falta alguns dados");
-
-            var user = new Client
-            {
-                UserName = reg.userName,
-                Email = reg.email,
-                PhoneNumber = reg.phoneNumber,
-                Address = reg.address,
-                PasswordHash = reg.password,
-                Type = UserType.CommonUser,
-                Status = 1
-            };
-            var result = await _userManager.CreateAsync(user, reg.password);
-            if (result.Errors.Any())
-            {
-                return Ok(result.Errors);
-            }
-
-            // Geração de Confirmação caso precise
-            var userId = await _userManager.GetUserIdAsync(user);
-            var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-            code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
-
-            // retorno email 
-            code = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(code));
-            var result2 = await _userManager.ConfirmEmailAsync(user, code);
-            if (result2.Succeeded)
-                return Ok("Usuário Adicionado com Sucesso");
+            if (string.IsNullOrWhiteSpace(id))
+                return Ok("Field is empty.");
+            var result = await _IApplicationClient.DeleteUser(id);
+            if (result==true)
+                return Ok("User deleted.");
             else
-                return Ok("Erro ao confirmar usuários");
-
-
+            return Ok("User not found.");
         }
 
-        [AllowAnonymous]
-        [Produces("application/json")]
-        [HttpDelete("/api/DeleteUserIdentity")]
-        public async Task<IActionResult> DeleteUserIdentity(string id)
-        {
-            var userCheck = await _userManager.FindByIdAsync(id);
-            if (userCheck != null || userCheck.Id == id)
-            {
-                var result = await _userManager.DeleteAsync(userCheck);
-                if (result.Succeeded)
-                    return Ok("Successfully deleted user.");
-            }
-
-            return Ok("Error to delete a user.");
-        }
     }
 }
 

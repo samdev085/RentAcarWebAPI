@@ -1,5 +1,7 @@
 ﻿using Application.Interfaces;
 using Domain.Interfaces;
+using Entities.Entities;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Application.Application
@@ -14,26 +16,29 @@ namespace Application.Application
             _IClient = IClient;
         }
 
+        public async Task<List<Client>> ListClients()
+        {
+            return await _IClient.ListClients();
+        }
+        public async Task<Client> GetUser(string id)
+        {
+            return await _IClient.GetUser(id);
+        }
         public async Task<bool> AddUser(string name, string email, string phone, string address, string password)
         {
             return await _IClient.AddUser(name, email, phone, address, password);
         }
-
         public async Task<bool> CheckUser(string email, string password)
         {
             return await _IClient.CheckUser(email, password);
         }
-
         public async Task<string> ReturnIdUser(string id)
         {
             return await _IClient.ReturnIdUser(id);
         }
-
         public async Task<bool> DeleteUser(string id)
         {
             return await _IClient.DeleteUser(id);
-        }
-
-        
+        }       
     }
 }

@@ -44,44 +44,44 @@ namespace RentAcarWebAPI
             // INTERFACE AND REPOSITORY
             //services.AddSingleton(typeof(IGeneric<>), typeof(RepositoryGeneric<>));
             services.AddSingleton<IClient, RepositoryClient>();
-            services.AddSingleton<IVehicle, RepositoryVehicle>();        
+            //services.AddSingleton<IVehicle, RepositoryVehicle>();
 
             // DOMAIN SERVICE
             //services.AddSingleton<IServiceNews, NewsService>();
 
             // INTERFACE APPLICATION
             services.AddSingleton<IApplicationClient, ApplicationClient>();
-            services.AddSingleton<IApplicationVehicle, ApplicationVehicle>();
+            //services.AddSingleton<IApplicationVehicle, ApplicationVehicle>();
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-       .AddJwtBearer(option =>
-       {
-           option.TokenValidationParameters = new TokenValidationParameters
+           .AddJwtBearer(option =>
            {
-               ValidateIssuer = false,
-               ValidateAudience = false,
-               ValidateLifetime = true,
-               ValidateIssuerSigningKey = true,
-
-               ValidIssuer = "Test.Securiry.Bearer",
-               ValidAudience = "Test.Securiry.Bearer",
-               IssuerSigningKey = JwtSecurityKey.Create("Secret_Key-12345678")
-           };
-
-           option.Events = new JwtBearerEvents
-           {
-               OnAuthenticationFailed = context =>
+               option.TokenValidationParameters = new TokenValidationParameters
                {
-                   Console.WriteLine("OnAuthenticationFailed: " + context.Exception.Message);
-                   return Task.CompletedTask;
-               },
-               OnTokenValidated = context =>
+                   ValidateIssuer = false,
+                   ValidateAudience = false,
+                   ValidateLifetime = true,
+                   ValidateIssuerSigningKey = true,
+
+                   ValidIssuer = "Test.Securiry.Bearer",
+                   ValidAudience = "Test.Securiry.Bearer",
+                   IssuerSigningKey = JwtSecurityKey.Create("Secret_Key-12345678")
+               };
+
+               option.Events = new JwtBearerEvents
                {
-                   Console.WriteLine("OnTokenValidated: " + context.SecurityToken);
-                   return Task.CompletedTask;
-               }
-           };
-       });
+                   OnAuthenticationFailed = context =>
+                   {
+                       Console.WriteLine("OnAuthenticationFailed: " + context.Exception.Message);
+                       return Task.CompletedTask;
+                   },
+                   OnTokenValidated = context =>
+                   {
+                       Console.WriteLine("OnTokenValidated: " + context.SecurityToken);
+                       return Task.CompletedTask;
+                   }
+               };
+           });
 
             services.AddControllers();
             services.AddSwaggerGen(c =>
@@ -93,13 +93,13 @@ namespace RentAcarWebAPI
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            
+
             var urlClient3 = "http://localhost:4200";
             app.UseCors(x => x
                .AllowAnyOrigin()
                .AllowAnyMethod()
                .AllowAnyHeader().WithOrigins(urlClient3));
-            
+
 
             if (env.IsDevelopment())
             {
