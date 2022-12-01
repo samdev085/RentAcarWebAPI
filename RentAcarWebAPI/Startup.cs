@@ -1,5 +1,6 @@
 using Application.Application;
 using Application.Interfaces;
+using Application.Services;
 using Domain.Interfaces;
 using Entities.Entities;
 using Infra.Configuration;
@@ -7,7 +8,6 @@ using Infra.Repository;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -39,19 +39,10 @@ namespace RentAcarWebAPI
 
 
             services.AddDefaultIdentity<Client>(options => options.SignIn.RequireConfirmedAccount = false)
-                .AddEntityFrameworkStores<Context>();
+                .AddEntityFrameworkStores<Context>();    
+           
+            services.AddScoped<IServiceUser, UserRepository>();
 
-            // INTERFACE AND REPOSITORY
-            //services.AddSingleton(typeof(IGeneric<>), typeof(RepositoryGeneric<>));
-            services.AddSingleton<IClient, RepositoryClient>();
-            //services.AddSingleton<IVehicle, RepositoryVehicle>();
-
-            // DOMAIN SERVICE
-            //services.AddSingleton<IServiceNews, NewsService>();
-
-            // INTERFACE APPLICATION
-            services.AddSingleton<IApplicationClient, ApplicationClient>();
-            //services.AddSingleton<IApplicationVehicle, ApplicationVehicle>();
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
            .AddJwtBearer(option =>
@@ -109,12 +100,9 @@ namespace RentAcarWebAPI
             }
 
             app.UseHttpsRedirection();
-
             app.UseRouting();
-
             app.UseAuthentication();
             app.UseAuthorization();
-
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();

@@ -24,6 +24,10 @@ namespace Application.Application
         {
             return await _IClient.GetUser(id);
         }
+        public async Task<bool> AddUserIdentity(string name, string email, string phone, string address, string password)
+        {
+            return await _IClient.AddUserIdentity(name, email, phone, address, password);
+        }
         public async Task<bool> AddUser(string name, string email, string phone, string address, string password)
         {
             return await _IClient.AddUser(name, email, phone, address, password);
@@ -39,6 +43,7 @@ namespace Application.Application
         public async Task<bool> DeleteUser(string id)
         {
             return await _IClient.DeleteUser(id);
-        }       
+        }
+
     }
 }
