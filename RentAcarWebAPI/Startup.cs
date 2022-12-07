@@ -1,33 +1,30 @@
 using Application.Application;
 using Application.Interfaces;
-using Application.Services;
 using Domain.Interfaces;
 using Entities.Entities;
 using Infra.Configuration;
 using Infra.Repository;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using RentAcarWebAPI.Token;
-using System;
-using System.Threading.Tasks;
+using RentAcarWebAPI.Extencions;
 
 namespace RentAcarWebAPI
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
-        {
-            Configuration = configuration;
-        }
 
         public IConfiguration Configuration { get; }
+
+        public Startup(IConfiguration configuration)
+        { 
+           Configuration = configuration;
+        }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
@@ -37,43 +34,14 @@ namespace RentAcarWebAPI
             services.AddDbContext<Context>(options =>
             options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
+            services.AddDefaultIdentity<Client>()
+                .AddRoles<IdentityRole>()
+                .AddEntityFrameworkStores<Context>();
 
-            services.AddDefaultIdentity<Client>(options => options.SignIn.RequireConfirmedAccount = false)
-                .AddEntityFrameworkStores<Context>();    
-           
-            services.AddScoped<IServiceUser, UserRepository>();
+            services.AddScoped<IApplicationUser, ApplicationUser>();
+            services.AddScoped<IUser, UserRepository>();
 
-
-            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-           .AddJwtBearer(option =>
-           {
-               option.TokenValidationParameters = new TokenValidationParameters
-               {
-                   ValidateIssuer = false,
-                   ValidateAudience = false,
-                   ValidateLifetime = true,
-                   ValidateIssuerSigningKey = true,
-
-                   ValidIssuer = "Test.Securiry.Bearer",
-                   ValidAudience = "Test.Securiry.Bearer",
-                   IssuerSigningKey = JwtSecurityKey.Create("Secret_Key-12345678")
-               };
-
-               option.Events = new JwtBearerEvents
-               {
-                   OnAuthenticationFailed = context =>
-                   {
-                       Console.WriteLine("OnAuthenticationFailed: " + context.Exception.Message);
-                       return Task.CompletedTask;
-                   },
-                   OnTokenValidated = context =>
-                   {
-                       Console.WriteLine("OnTokenValidated: " + context.SecurityToken);
-                       return Task.CompletedTask;
-                   }
-               };
-           });
-
+            services.AddAuthentication(Configuration);        
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
