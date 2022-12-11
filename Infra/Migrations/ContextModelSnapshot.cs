@@ -231,15 +231,15 @@ namespace Infra.Migrations
 
                     b.Property<string>("Address")
                         .HasColumnType("nvarchar(max)")
-                        .HasColumnName("CLNT_ADDRESS");
+                        .HasColumnName("Address");
 
                     b.Property<int>("Status")
                         .HasColumnType("int")
-                        .HasColumnName("CLNT_STATUS");
+                        .HasColumnName("Status");
 
                     b.Property<int?>("Type")
                         .HasColumnType("int")
-                        .HasColumnName("CLNT_TYPE");
+                        .HasColumnName("Type");
 
                     b.HasDiscriminator().HasValue("Client");
                 });

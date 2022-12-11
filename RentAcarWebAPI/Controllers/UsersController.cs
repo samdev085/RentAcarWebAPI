@@ -26,6 +26,39 @@ namespace RentAcarWebAPI.Controllers
         }
 
 
+        [AllowAnonymous]
+        [Produces("application/json")]
+        [HttpGet("/api/ListUsers")]
+        public async Task<ActionResult<ListUsersResponse>> ListUsers()
+        {
+            return await _IApplicationUser.ListUsers();           
+        }
+
+        [AllowAnonymous]
+        [Produces("application/json")]
+        [HttpGet("/api/GetUserById")]
+        public async Task<ActionResult<UserModelResponse>> GetUserById(string id)
+        {
+            var result = await _IApplicationUser.GetUserById(id);
+            if (result != null)
+                return Ok(result);
+            else
+                return BadRequest("User not found or does not exist.");
+
+        }
+
+        [AllowAnonymous]
+        [Produces("application/json")]
+        [HttpDelete("/api/DeleteUser")]
+        public async Task<IActionResult> DeleteUser(string id)
+        {
+            var result = await _IApplicationUser.DeleteUser(id);
+            if (result == true)
+                return Ok("User deleted.");
+            else
+                return BadRequest("User not found or does not exist.");
+            
+        }
 
         [AllowAnonymous]
         [Produces("application/json")]

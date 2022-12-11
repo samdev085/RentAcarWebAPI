@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infra.Migrations
 {
     [DbContext(typeof(Context))]
-    [Migration("20221201194855_Initial")]
+    [Migration("20221211023848_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -233,15 +233,15 @@ namespace Infra.Migrations
 
                     b.Property<string>("Address")
                         .HasColumnType("nvarchar(max)")
-                        .HasColumnName("CLNT_ADDRESS");
+                        .HasColumnName("Address");
 
                     b.Property<int>("Status")
                         .HasColumnType("int")
-                        .HasColumnName("CLNT_STATUS");
+                        .HasColumnName("Status");
 
                     b.Property<int?>("Type")
                         .HasColumnType("int")
-                        .HasColumnName("CLNT_TYPE");
+                        .HasColumnName("Type");
 
                     b.HasDiscriminator().HasValue("Client");
                 });

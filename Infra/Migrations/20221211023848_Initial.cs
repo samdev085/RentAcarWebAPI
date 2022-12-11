@@ -27,9 +27,9 @@ namespace Infra.Migrations
                 {
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     Discriminator = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    CLNT_ADDRESS = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    CLNT_STATUS = table.Column<int>(type: "int", nullable: true),
-                    CLNT_TYPE = table.Column<int>(type: "int", nullable: true),
+                    Address = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Status = table.Column<int>(type: "int", nullable: true),
+                    Type = table.Column<int>(type: "int", nullable: true),
                     UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),

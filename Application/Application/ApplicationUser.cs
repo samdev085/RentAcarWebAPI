@@ -20,11 +20,27 @@ namespace Application.Application
             _IUser = IUser;
         }
 
+        public async Task<ListUsersResponse> ListUsers()
+        {
+            return await _IUser.ListUsers();
+        }
+
+        public async Task<bool> DeleteUser(string id)
+        {
+            return await _IUser.DeleteUser(id);
+        }
+
+        public async Task<UserModelResponse> GetUserById(string id)
+        {
+            return await _IUser.GetUserById(id);
+        }
+
         public async Task<UserRegisterResponse> AddNewUser(UserRegisterRequest request)
         {
             return await _IUser.AddNewUser(request);
         }
 
+        
         public async Task<UserLoginResponse> Login(UserLoginRequest request)
         {
             return await _IUser.Login(request);

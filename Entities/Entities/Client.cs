@@ -11,13 +11,13 @@ namespace Entities.Entities
 {
     public class Client : IdentityUser
     {
-        [Column("CLNT_ADDRESS")]
+        [Column("Address")]
         public string Address { get; set; }
 
-        [Column("CLNT_STATUS")]
+        [Column("Status")]
         public int Status { get; set; }
 
-        [Column("CLNT_TYPE")]
+        [Column("Type")]
         public UserType? Type { get; set; }
     }
 }

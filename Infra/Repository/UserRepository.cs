@@ -3,8 +3,11 @@ using Domain.DTO_s.Response;
 using Domain.Interfaces;
 using Entities.Entities;
 using Entities.Enums;
+using Infra.Configuration;
 using Infra.JwtConfiguration;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
@@ -20,44 +23,88 @@ namespace Infra.Repository
         private readonly SignInManager<Client> _signInManager;
         private readonly UserManager<Client> _userManager;
         private readonly JwtOptions _jwtOptions;
+        private readonly DbContextOptions<Context> _optionsbuilder;
 
-        public UserRepository(SignInManager<Client> signInManager, 
+        public UserRepository(SignInManager<Client> signInManager,
                               UserManager<Client> userManager,
-                              IOptions<JwtOptions> jwtOptions)
+                              IOptions<JwtOptions> jwtOptions,
+                              DbContextOptions<Context> optionsbuilder)
         {
             _signInManager = signInManager;
             _userManager = userManager;
             _jwtOptions = jwtOptions.Value;
+            _optionsbuilder = optionsbuilder;
         }
 
+        public async Task<ListUsersResponse> ListUsers()
+        {
+            using (var data = new Context(_optionsbuilder))
+            {
+                var list = await data.Client.ToListAsync();
+                var listUsersResponse = new ListUsersResponse();
+                listUsersResponse.Clients = list;
+                return listUsersResponse;
+            }
+        }
+        public async Task<bool> DeleteUser(string id)
+        {
+            using (var data = new Context(_optionsbuilder))
+            {
+                var user = await _userManager.FindByIdAsync(id);
+                if (user != null)
+                    await _userManager.DeleteAsync(user);
+                var userCheck = await _userManager.FindByIdAsync(id);
+                if (userCheck == null)
+                    return true;
+                else
+                    return false;
+            }
+        }
+        public async Task<UserModelResponse> GetUserById(string id)
+        {
+            using (var data = new Context(_optionsbuilder))
+            {
+                var user = await _userManager.FindByIdAsync(id);
+                var modelUser = new UserModelResponse();
+                if (user != null)
+                {
+                    modelUser.User = user;
+                    return modelUser;
+                }                    
+                else
+                    return null;                                
+            }
+        }
         public async Task<UserRegisterResponse> AddNewUser(UserRegisterRequest request)
         {
             var userRegister = new UserRegisterResponse();
             var userCheck = await _userManager.FindByEmailAsync(request.Email);
-                if (userCheck==null)
+            if (userCheck == null)
+            {
+                var user = new Client
                 {
-                    var user = new Client
-                    {
-                        UserName = request.Email,
-                        Email = request.Email,
-                        EmailConfirmed = true,
-                        Type = UserType.CommonUser
-                    };
-                    var result = await _userManager.CreateAsync(user, request.Senha);
-                    if (result.Succeeded)
-                        await _userManager.SetLockoutEnabledAsync(user, false);
+                    UserName = request.Email,
+                    Email = request.Email,
+                    Address = request.Address,
+                    Status = 1,
+                    Type = UserType.CommonUser,
+                    EmailConfirmed = true
+                };
+                var result = await _userManager.CreateAsync(user, request.Password);
+                if (result.Succeeded)
+                    await _userManager.SetLockoutEnabledAsync(user, false);
 
-                    var userRegisterResponse = new UserRegisterResponse(result.Succeeded);
-                    if (!result.Succeeded && result.Errors.Count() > 0)
-                        userRegisterResponse.AddErros(result.Errors.Select(r => r.Description));
-                        userRegister = userRegisterResponse;
-                }
+                var userRegisterResponse = new UserRegisterResponse(result.Succeeded);
+                if (!result.Succeeded && result.Errors.Count() > 0)
+                    userRegisterResponse.AddErros(result.Errors.Select(r => r.Description));
+                userRegister = userRegisterResponse;
+            }
 
             return userRegister;
         }
         public async Task<UserLoginResponse> Login(UserLoginRequest request)
         {
-            var result = await _signInManager.PasswordSignInAsync(request.Email, request.Senha, false, true);
+            var result = await _signInManager.PasswordSignInAsync(request.Email, request.Password, false, true);
             if (result.Succeeded)
                 return await GenerateCredentials(request.Email);
 
@@ -149,6 +196,6 @@ namespace Infra.Repository
             return new JwtSecurityTokenHandler().WriteToken(jwt);
         }
 
-        
+
     }
 }
