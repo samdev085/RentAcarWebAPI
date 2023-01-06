@@ -1,4 +1,5 @@
-﻿using Domain.DTO_s.Request;
+﻿using Domain.DTO_s.Models;
+using Domain.DTO_s.Request;
 using Domain.DTO_s.Response;
 using Domain.Interfaces;
 using Entities.Entities;
@@ -6,7 +7,6 @@ using Entities.Enums;
 using Infra.Configuration;
 using Infra.JwtConfiguration;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using System;
@@ -36,43 +36,45 @@ namespace Infra.Repository
             _optionsbuilder = optionsbuilder;
         }
 
-        public async Task<ListUsersResponse> ListUsers()
+        public async Task<List<UserModel>> ListUsers()
         {
             using (var data = new Context(_optionsbuilder))
             {
-                var list = await data.Client.ToListAsync();
-                var listUsersResponse = new ListUsersResponse();
-                listUsersResponse.Clients = list;
-                return listUsersResponse;
+                var clients = await data.Client.ToListAsync();
+                List<UserModel> result = new List<UserModel>();
+                foreach (var client in clients)
+                {
+                    result.Add(new UserModel
+                    {
+                        Name = client.UserName,
+                        Email = client.Email,
+                        Phone = client.PhoneNumber,
+                        Address = client.Address,
+                        Status = client.Status
+                    });
+                }
+
+                return result;
             }
         }
-        public async Task<bool> DeleteUser(string id)
+        public async Task<UserModel> GetUserById(string id)
         {
             using (var data = new Context(_optionsbuilder))
             {
                 var user = await _userManager.FindByIdAsync(id);
-                if (user != null)
-                    await _userManager.DeleteAsync(user);
-                var userCheck = await _userManager.FindByIdAsync(id);
-                if (userCheck == null)
-                    return true;
-                else
-                    return false;
-            }
-        }
-        public async Task<UserModelResponse> GetUserById(string id)
-        {
-            using (var data = new Context(_optionsbuilder))
-            {
-                var user = await _userManager.FindByIdAsync(id);
-                var modelUser = new UserModelResponse();
+                var modelUser = new UserModel();
                 if (user != null)
                 {
-                    modelUser.User = user;
+                    modelUser.Name = user.UserName;
+                    modelUser.Email = user.Email;
+                    modelUser.Phone = user.PhoneNumber;
+                    modelUser.Address = user.Address;
+                    modelUser.Status = user.Status;
+
                     return modelUser;
-                }                    
+                }
                 else
-                    return null;                                
+                    return null;
             }
         }
         public async Task<UserRegisterResponse> AddNewUser(UserRegisterRequest request)
@@ -86,7 +88,8 @@ namespace Infra.Repository
                     UserName = request.Email,
                     Email = request.Email,
                     Address = request.Address,
-                    Status = 1,
+                    PhoneNumber = request.Phone,
+                    Status = 0,
                     Type = UserType.CommonUser,
                     EmailConfirmed = true
                 };
@@ -102,6 +105,34 @@ namespace Infra.Repository
 
             return userRegister;
         }
+        public async Task<UserModel> UpdateUser(UserModel request)
+        {
+            var user = await _userManager.FindByEmailAsync(request.Email);
+            if (user != null)
+
+                user.UserName = request.Name;
+            user.Email = request.Email;
+            user.PhoneNumber = request.Phone;
+            user.Address = request.Address;
+            user.Status = 1;
+
+            await _userManager.UpdateAsync(user);
+
+            var userCheck = await _userManager.FindByEmailAsync(request.Email);
+            if (userCheck != null)
+            {
+                var model = new UserModel();
+                model.Name = userCheck.UserName;
+                model.Email = userCheck.Email;
+                model.Phone = userCheck.PhoneNumber;
+                model.Address = userCheck.Address;
+                model.Status = userCheck.Status;
+
+                return model;
+            };
+
+            return null;
+        }
         public async Task<UserLoginResponse> Login(UserLoginRequest request)
         {
             var result = await _signInManager.PasswordSignInAsync(request.Email, request.Password, false, true);
@@ -109,6 +140,7 @@ namespace Infra.Repository
                 return await GenerateCredentials(request.Email);
 
             var userLoginResponse = new UserLoginResponse();
+
             if (!result.Succeeded)
             {
                 if (result.IsLockedOut)
@@ -138,6 +170,20 @@ namespace Infra.Repository
 
             return userLoginResponse;
         }
+        public async Task<bool> DeleteUser(string id)
+        {
+            using (var data = new Context(_optionsbuilder))
+            {
+                var user = await _userManager.FindByIdAsync(id);
+                if (user != null)
+                    await _userManager.DeleteAsync(user);
+                var userCheck = await _userManager.FindByIdAsync(id);
+                if (userCheck == null)
+                    return true;
+                else
+                    return false;
+            }
+        }
 
 
         // PRIVATES //
@@ -157,7 +203,8 @@ namespace Infra.Repository
             (
                 success: true,
                 accessToken: accessToken,
-                refreshToken: refreshToken
+                refreshToken: refreshToken,
+                user: user
             );
         }
         private async Task<IList<Claim>> GetClaims(IdentityUser user, bool addClaimsUser)
@@ -195,7 +242,5 @@ namespace Infra.Repository
 
             return new JwtSecurityTokenHandler().WriteToken(jwt);
         }
-
-
     }
 }

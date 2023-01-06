@@ -1,4 +1,5 @@
 ﻿using Application.Interfaces;
+using Domain.DTO_s.Models;
 using Domain.DTO_s.Request;
 using Domain.DTO_s.Response;
 using Domain.Interfaces;
@@ -20,7 +21,7 @@ namespace Application.Application
             _IUser = IUser;
         }
 
-        public async Task<ListUsersResponse> ListUsers()
+        public async Task<List<UserModel>> ListUsers()
         {
             return await _IUser.ListUsers();
         }
@@ -30,7 +31,7 @@ namespace Application.Application
             return await _IUser.DeleteUser(id);
         }
 
-        public async Task<UserModelResponse> GetUserById(string id)
+        public async Task<UserModel> GetUserById(string id)
         {
             return await _IUser.GetUserById(id);
         }
@@ -40,7 +41,11 @@ namespace Application.Application
             return await _IUser.AddNewUser(request);
         }
 
-        
+        public async Task<UserModel> UpdateUser(UserModel resquest)
+        {
+            return await _IUser.UpdateUser(resquest);
+        }
+
         public async Task<UserLoginResponse> Login(UserLoginRequest request)
         {
             return await _IUser.Login(request);
@@ -50,5 +55,6 @@ namespace Application.Application
         {
             return await _IUser.LoginWithoutPassword(userId);
         }
+
     }
 }
