@@ -13,6 +13,7 @@ namespace Domain.DTO_s.Models
         public string Phone { get; set; }
         public string Address { get; set; }
         public int Status { get; set; }
+
         public List<string> Erros { get; private set; }
 
 

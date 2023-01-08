@@ -41,6 +41,10 @@ namespace RentAcarWebAPI
             services.AddScoped<IApplicationUser, ApplicationUser>();
             services.AddScoped<IUser, UserRepository>();
 
+
+            services.AddScoped<IApplicationVehicle, ApplicationVehicle>();
+            services.AddScoped<IVehicle, VehicleRepository>();
+
             services.AddAuthentication(Configuration);        
             services.AddControllers();
             services.AddSwaggerGen(c =>

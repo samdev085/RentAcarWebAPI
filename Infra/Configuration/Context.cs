@@ -17,6 +17,7 @@ namespace Infra.Configuration
         }
 
         public DbSet<Client> Client { get; set; }
+        public DbSet<Vehicle> Vehicle { get; set; }
 
 
 

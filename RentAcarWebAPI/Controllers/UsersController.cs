@@ -130,58 +130,5 @@ namespace RentAcarWebAPI.Controllers
 
         }
 
-
-        [AllowAnonymous]
-        [Produces("application/json")]
-        [HttpGet("/api/ListDebts")]
-        public async Task<ActionResult<List<SearchResultResponse>>> ListDebts()
-        {
-            var list = new List<SearchResultResponse>();
-
-            var result1  = new SearchResultResponse             
-            { 
-                Title = "Expedição de CRV/CRLV 2021",
-                Description = "Expedição de CRV/CRLV 2021",
-                ExpirationDate = "10/02/2022",
-                Price = "100,00"
-            };
-            list.Add(result1);
-
-            var result2 = new SearchResultResponse
-            {
-                Title = "Expedição de CRV/CRLV 2022",
-                Description = "Expedição de CRV/CRLV 2022",
-                ExpirationDate = "10/02/2023",
-                Price = "135,84"
-            };
-            list.Add(result2);
-
-            var result3 = new SearchResultResponse
-            {
-                Title = "Licenciamento 2021",
-                Description = "Licenciamento 2021",
-                ExpirationDate = "10/02/2022",
-                Price = "130,43"
-            };
-            list.Add(result3);
-
-            var result4 = new SearchResultResponse
-            {
-                Title = "Licenciamento 2022",
-                Description = "Licenciamento 2022",
-                ExpirationDate = "10/02/2023",
-                Price = "130,43",
-            };
-            list.Add(result4);
-
-            if (list != null)
-
-                return Ok(list);
-
-            else
-                return BadRequest();
-
-        }
-
     }
 }
